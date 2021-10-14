@@ -125,6 +125,21 @@ EOF
         exit  0
 }
 
+install_rocky() {
+    echo "Running: yum install -y bc nrpe compat-openssl10 nrpe-selinux"
+    yum install -y bc nrpe compat-openssl10 nrpe-selinux
+
+    clean_nrpe ;
+
+    configure_ok_bundle ;
+
+    service nrpe start
+    chkconfig nrpe on
+
+    echo "Install Complete"
+    exit  0
+}
+
 clean_nrpe() {
 
 mkdir -p $NRPE_D
@@ -457,6 +472,11 @@ elif [[ "$DISTRO" =~ "ubuntu" ]]; then
 	NRPE_D=/etc/nrpe.d
 	NRPE_USER=nagios
 	install_debian
+elif [[ "$DISTRO" =~ "rocky" ]]; then
+    PLUGINDIR=/usr/lib64/nagios/plugins/
+    NRPE_USER=nrpe
+    NRPE_D=/etc/nrpe.d/
+    install_rocky
 else
 	echo could not detect distribution. Exiting...
 	exit 1
